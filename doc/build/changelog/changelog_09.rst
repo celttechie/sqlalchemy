@@ -15,8 +15,117 @@
     :released:
 
     .. change::
+        :tags: bug, postgresql, pg8000
+        :tickets: 3134
+        :versions: 1.0.0
+
+        Fixed bug introduced in 0.9.5 by new pg8000 isolation level feature
+        where engine-level isolation level parameter would raise an error
+        on connect.
+
+    .. change::
+        :tags: bug, oracle, tests
+        :tickets: 3128
+        :versions: 1.0.0
+
+        Fixed bug in oracle dialect test suite where in one test,
+        'username' was assumed to be in the database URL, even though
+        this might not be the case.
+
+    .. change::
+        :tags: bug, orm, eagerloading
+        :tickets: 3131
+        :versions: 1.0.0
+
+        Fixed a regression caused by :ticket:`2976` released in 0.9.4 where
+        the "outer join" propagation along a chain of joined eager loads
+        would incorrectly convert an "inner join" along a sibling join path
+        into an outer join as well, when only descendant paths should be
+        receiving the "outer join" propagation; additionally, fixed related
+        issue where "nested" join propagation would take place inappropriately
+        between two sibling join paths.
+
+    .. change::
+        :tags: bug, sqlite
+        :tickets: 3130
+        :versions: 1.0.0
+
+        Fixed a SQLite join rewriting issue where a subquery that is embedded
+        as a scalar subquery such as within an IN would receive inappropriate
+        substitutions from the enclosing query, if the same table were present
+        inside the subquery as were in the enclosing query such as in a
+        joined inheritance scenario.
+
+    .. change::
+        :tags: bug, sql
+        :tickets: 3067
+        :versions: 1.0.0
+
+        Fix bug in naming convention feature where using a check
+        constraint convention that includes ``constraint_name`` would
+        then force all :class:`.Boolean` and :class:`.Enum` types to
+        require names as well, as these implicitly create a
+        constraint, even if the ultimate target backend were one that does
+        not require generation of the constraint such as Postgresql.
+        The mechanics of naming conventions for these particular
+        constraints has been reorganized such that the naming
+        determination is done at DDL compile time, rather than at
+        constraint/table construction time.
+
+    .. change::
+        :tags: bug, mssql
+        :tickets: 3025
+
+        Fixed a regression from 0.9.5 caused by :ticket:`3025` where the
+        query used to determine "default schema" is invalid in SQL Server 2000.
+        For SQL Server 2000 we go back to defaulting to the "schema name"
+        parameter of the dialect, which is configurable but defaults
+        to 'dbo'.
+
+    .. change::
+        :tags: bug, orm
+        :tickets: 3083, 2736
+        :versions: 1.0.0
+
+        Fixed a regression from 0.9.0 due to :ticket:`2736` where the
+        :meth:`.Query.select_from` method no longer set up the "from
+        entity" of the :class:`.Query` object correctly, so that
+        subsequent :meth:`.Query.filter_by` or :meth:`.Query.join`
+        calls would fail to check the appropriate "from" entity when
+        searching for attributes by string name.
+
+    .. change::
+        :tags: bug, sql
+        :tickets: 3090
+        :versions: 1.0.0
+
+        Fixed bug in common table expressions whereby positional bound
+        parameters could be expressed in the wrong final order
+        when CTEs were nested in certain ways.
+
+    .. change::
+        :tags: bug, sql
+        :tickets: 3069
+        :versions: 1.0.0
+
+        Fixed bug where multi-valued :class:`.Insert` construct would fail
+        to check subsequent values entries beyond the first one given
+        for literal SQL expressions.
+
+    .. change::
+        :tags: bug, sql
+        :tickets: 3123
+        :versions: 1.0.0
+
+        Added a "str()" step to the dialect_kwargs iteration for
+        Python version < 2.6.5, working around the
+        "no unicode keyword arg" bug as these args are passed along as
+        keyword args within some reflection processes.
+
+    .. change::
         :tags: bug, sql
         :tickets: 3122
+        :versions: 1.0.0
 
         The :meth:`.TypeEngine.with_variant` method will now accept a
         type class as an argument which is internally converted to an
@@ -58,15 +167,6 @@
 
         Added support for Postgresql JSONB via :class:`.JSONB`.  Pull request
         courtesy Damian Dimmich.
-
-    .. change::
-        :tags: bug, ext
-        :versions: 1.0.0
-        :pullreq: bitbucket:24
-        :tickets: 3093
-
-        Fixed bug where :meth:`.MutableDict.setdefault` didn't return the
-        existing or new value.  Pull request courtesy Thomas Hervé.
 
     .. change::
         :tags: feature, mssql

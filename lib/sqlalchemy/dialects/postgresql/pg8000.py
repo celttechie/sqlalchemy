@@ -150,10 +150,14 @@ class PGDialect_pg8000(PGDialect):
     def set_isolation_level(self, connection, level):
         level = level.replace('_', ' ')
 
+        # adjust for ConnectionFairy possibly being present
+        if hasattr(connection, 'connection'):
+            connection = connection.connection
+
         if level == 'AUTOCOMMIT':
-            connection.connection.autocommit = True
+            connection.autocommit = True
         elif level in self._isolation_lookup:
-            connection.connection.autocommit = False
+            connection.autocommit = False
             cursor = connection.cursor()
             cursor.execute(
                 "SET SESSION CHARACTERISTICS AS TRANSACTION "
@@ -165,6 +169,6 @@ class PGDialect_pg8000(PGDialect):
                 "Invalid value '%s' for isolation_level. "
                 "Valid isolation levels for %s are %s or AUTOCOMMIT" %
                 (level, self.name, ", ".join(self._isolation_lookup))
-                )
+            )
 
 dialect = PGDialect_pg8000
